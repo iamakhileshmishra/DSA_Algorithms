@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="expense-tracker">
+    <div class="expense-header">
+        <h2>Expense Tracker</h2>
+        <button class="add-expense-btn">Add Expense</button>
+    </div>
+    <input type="text" id="search" placeholder="Search expenses...">
+    <div class="expense-list"></div>
+    <div class="total-expenses">
+        <h3>Total Expense: $0</h3>
+    </div>
+</div>
+
+<!-- Modal for adding expense -->
+<div id="expense-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Add New Expense</h2>
+        <input type="text" id="expense-description" placeholder="Description">
+        <input type="number" id="expense-amount" placeholder="Amount">
+        <input type="date" id="expense-date">
+        <button id="save-expense-btn">Save</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
