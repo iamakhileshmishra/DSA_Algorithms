@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platformer Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 400;
+
+        // Game variables
+        const player = {
+            x: 50,
+            y: 300,
+            width: 40,
+            height: 40,
+            color: 'blue',
+            velocityY: 0,
+            velocityX: 0,
+            speed: 5,
+            jumping: false
+        };
+
+        const gravity = 0.8;
+        const jumpStrength = -12;
+        let score = 0;
+
+        const coins = [
+            { x: 300, y: 280, collected: false },
+            { x: 500, y: 280, collected: false },
+            { x: 700, y: 280, collected: false }
+        ];
+
+        const obstacles = [
+            { x: 400, y: 320, width: 40, height: 40 },
+            { x: 600, y: 320, width: 40, height: 40 }
+        ];
+
+        function drawPlayer() {
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        function drawCoins() {
+            coins.forEach(coin => {
+                if (!coin.collected) {
+                    ctx.fillStyle = 'gold';
+                    ctx.beginPath();
+                    ctx.arc(coin.x, coin.y, 10, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+
+        function drawObstacles() {
+            obstacles.forEach(obstacle => {
+                ctx.fillStyle = 'red';
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+            });
+        }
+
+        function handlePlayerMovement() {
+            player.velocityY += gravity;
+            player.y += player.velocityY;
+            player.x += player.velocityX;
+
+            if (player.y + player.height >= canvas.height) {
+                player.y = canvas.height - player.height;
+                player.jumping = false;
+            }
+
+            // Prevent player from moving out of bounds
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+        }
+
+        function checkCollisions() {
+            coins.forEach(coin => {
+                if (
+                    !coin.collected &&
+                    player.x < coin.x + 10 &&
+                    player.x + player.width > coin.x - 10 &&
+                    player.y < coin.y + 10 &&
+                    player.y + player.height > coin.y - 10
+                ) {
+                    coin.collected = true;
+                    score++;
+                }
+            });
+
+            obstacles.forEach(obstacle => {
+                if (
+                    player.x < obstacle.x + obstacle.width &&
+                    player.x + player.width > obstacle.x &&
+                    player.y < obstacle.y + obstacle.height &&
+                    player.y + player.height > obstacle.y
+                ) {
+                    alert('Game Over! Final Score: ' + score);
+                    document.location.reload();
+                }
+            });
+        }
+
+        function drawScore() {
+            ctx.fillStyle = 'black';
+            ctx.font = '20px Arial';
+            ctx.fillText('Score: ' + score, 10, 30);
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawPlayer();
+            drawCoins();
+            drawObstacles();
+            drawScore();
+
+            handlePlayerMovement();
+            checkCollisions();
+
+            // End the game when score equals 3
+            if (score === 3) {
+                alert('Congratulations! You collected all the coins!');
+                document.location.reload();
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !player.jumping) {
+                player.velocityY = jumpStrength;
+                player.jumping = true;
+            }
+            if (e.code === 'ArrowLeft') {
+                player.velocityX = -player.speed;
+            }
+            if (e.code === 'ArrowRight') {
+                player.velocityX = player.speed;
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
+                player.velocityX = 0;
+            }
+        });
+
+        gameLoop();
+    </script>
+</body>
+</html>
